@@ -1,0 +1,147 @@
+<!DOCTYPE html> 
+<html> 
+<head>
+	<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+	<meta charset="utf-8">
+	
+	<link rel="stylesheet" href="Styles/mainstyles.css" type="text/css">
+	<script src="Scripts/jquery.js"></script>
+</head>
+
+<body> 
+
+<div style="float:left;width:45%;height:500px;">
+<h3>Sample video</h3>
+<div style="text-align:center"> 
+  
+   <div id="stage">
+  		<video id="video" controls autoplay>
+    		<source src="Videos/big_buck_bunny.webm" type="video/webm">
+    		Your browser does not support HTML5 video.
+  		</video>
+   </div>
+    
+</div>
+
+</div> 
+
+
+<div style="float:left;width:40%;height:500px;">
+	<h3>Video Trim options</h3>
+	  
+	Start time :<input type="button" class="getstart" value="get time"><span class="start value">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+				&nbsp;&nbsp;<span class="ss">seconds</span><br>
+	End time :  <input type="button" class="getend" value="get time"><span class="end value">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+				&nbsp;&nbsp;<span class="es">seconds</span><br>   
+	  
+	<button id="btn_trim">Trim</button>
+	<div id="wait" style="display:none;width:150px;height:89px;position:absolute;padding:2px;margin-right:20px;"><img src='Images/demo_wait.gif' width="20" height="20" />Trimming..</div>
+
+
+	<div class="trim_video" style="display:none;">
+	</div>
+
+
+	<div class=".crop_vid_options" style="display:none;">
+		<input type="text" id="txt_path"> 
+		<a id="download" style="border:2px outset buttonface;background-color: buttonface;">Download</a>
+	</div>
+
+
+</div>
+</div> 
+
+ 
+<script>
+
+$(document).ready(function(){ 
+     
+    var player = $('#video').get(0);
+
+    console.log(player);
+    var fname,path;
+
+	// Get start time 
+    $('.getstart').click(function(){
+    window.player = player;
+    path = player.currentSrc.replace('http://localhost','/var/www')
+    fname = player.currentSrc.substr(player.currentSrc.lastIndexOf('/')+1);
+    
+ 
+	 outputname = fname;
+	 download = path.substr(0,path.lastIndexOf('/'))+'/'+outputname;
+	 
+    
+    
+     if(player){
+            current_time=player.currentTime;
+            $('.start').html(Math.round(current_time));
+        }
+     });
+     
+     
+     //Get End time
+     $('.getend').click(function(){
+            if(player){
+                current_time=player.currentTime;
+                $('.end').html(Math.round(current_time));
+            }
+     });
+     
+     
+     //Crop video
+     $('#btn_trim').click(function(){
+    	
+     	//$('#crop').attr('disabled','disabled');
+     	var start = $('.start').text();
+     	var end = $('.end').text();
+ 
+ 		if(start < end)
+ 		{
+     		$('#btn_trim').attr('disabled','disabled');
+		 	$.ajax({
+		 		type:'POST',
+		 		url:'videotoolkit/examples/videotrim.php',
+		 		dataType : 'json',
+		 		data:{start:start, end : end, name: fname, filepath:path},
+		 		beforeSend: function() {
+		          $("#wait").show();
+		        },
+		 		success:function(data){
+		 		 $("#wait").hide();
+		 		 $('#btn_trim').removeAttr('disabled');
+		 		 console.log(data);
+		 		 if(data.success === true)								//Success
+		 		 {
+		 		 	$('.trim_video').html('');
+		 		 	$('.trim_video').show();
+		 		 	var src="videotoolkit/examples/output/"+outputname;		// Show cropped video
+		 		 	$('.trim_video').append('<h3>Output video</h3><a href='+src+' download='+outputname+'>Download</a><div style="background:#eee;height:300px;width:400px;"><video controls autoplay style="width:400px;height:300px;" id="trim_video"><source src='+src+' type="video/ogg">Your browser does not support HTML5 video.</video></div>');
+		 		 	 $('#trim_video').get(0).load();
+		 		 	 $('#txt_path').val(src);
+		 		 }
+		 		 else													// Fail
+		 		 {
+		 		 	$('.trim_video').html('');$('.trim_video').show();
+		 		 	$('.trim_video').append('<p>Sorry..!Cropping failed please try after some time.</p>');	
+		 		 }
+		 		},
+		 		error: function(){
+		 		
+		 		},
+		 	});
+     	}
+     	else
+     	{
+     		alert('Start time is less than end time');
+     	}
+     });
+     
+});
+
+</script>
+
+
+</body> 
+</html>
+

@@ -1,0 +1,136 @@
+<!DOCTYPE html> 
+<html> 
+<head>
+	<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+	<meta charset="utf-8">
+	
+	<link rel="stylesheet" href="Styles/mainstyles.css" type="text/css">
+	<script src="Scripts/jquery.js"></script>
+	
+</head>
+
+<body> 
+
+<div style="float:left;width:45%;height:500px;">
+<h3>Sample video</h3>
+<div style="text-align:center"> 
+  
+   <div id="stage">
+  		<video id="video" controls autoplay>
+    		<source src="Videos/big_buck_bunny_multi.ogg" type="video/ogg">
+    		Your browser does not support HTML5 video.
+  		</video>
+   </div>
+    
+</div>
+
+</div> 
+
+
+<div style="float:left;width:40%;height:500px;">
+ <h3>Resize video:</h3>
+	 
+	 <select id="vid_dim">
+	 	<option value="-1">-Select Dimensions-</option>
+	 	<option value="DIMENSION_SQCIF">128x96</option>	 		<option value="DIMENSION_QVGA">320x240</option>
+	 	<option value="DIMENSION_QCIF">176x144</option>		 	<option value="DIMENSION_VGA">640x480</option>
+	 	<option value="DIMENSION_CIF">352x288</option>	 		<option value="DIMENSION_SVGA">800x600</option>
+	 	<option value="DIMENSION_4CIF">704x576</option>	 		<option value="DIMENSION_XGA">1024x768</option>
+	 	<option value="DIMENSION_QQVGA">160x120</option>		<option value="DIMENSION_UXGA">1600x1200</option>
+	 	<option value="DIMENSION_QXGA">2048x1536</option>		<option value="DIMENSION_SXGA">1280x1024</option>
+	 	<option value="DIMENSION_QSXGA">2560x2048</option>		<option value="DIMENSION_HSXGA">5120x4096</option>
+	 	<option value="DIMENSION_WVGA">852x480</option>	 		<option value="DIMENSION_WXGA">1366x768</option>
+	 	<option value="DIMENSION_WSXGA">1600x1024</option>	 	<option value="DIMENSION_WUXGA">1920x1200</option>
+ 	 	<option value="DIMENSION_WOXGA">2560x1600</option>	 	<option value="DIMENSION_WQSXGA">3200x2048</option>
+ 	 	<option value="DIMENSION_WQUXGA">3840x2400</option>	 	<option value="DIMENSION_WHSXGA">6400x4096</option>
+	 	<option value="DIMENSION_WHUXGA">7680x4800</option>	 	<option value="DIMENSION_CGA">320x200</option> 	 	
+ 	 	<option value="DIMENSION_EGA">640x350</option>	 		<option value="DIMENSION_HD480">852x480</option>
+ 	 	<option value="DIMENSION_HD720">1280x720</option>	 	<option value="DIMENSION_HD1080">1920x1080</option>
+	 </select>
+	 
+	 <select id="vid_format">
+	 	<option value="-1">-Select video Format-</option>
+	 	<option value="3gp">3gp</option> <option value="flv">FLV</option>
+	 	<!--<option value="h264">H264</option>--> <option value="mkv">MKV</option>
+	 	<option value="mp4">MP4</option> <option value="ogg">OGG</option>
+	 	<option value="webm">WEBM</option> <option value="wmv">WMV</option> 
+	 	<!--<option value="wmv3">WMV3</option>-->
+	 </select>
+	 
+	 
+	 
+	 <input type="button" value="Convert" id="btn_convert">
+	 <div id="wait1" style="display:none;width:150px;height:89px;position:absolute;padding:2px;margin-right:20px;"><img src='Images/demo_wait.gif' width="20" height="20" />Converting..</div>
+	<div class="convert_video" style="display:none;"></div> 
+	
+</div> 
+
+ 
+<script>
+
+$(document).ready(function(){ 
+     
+     $('#btn_convert').click(function(){
+    
+     if($('#vid_format').val() == '-1' || $('#vid_dim').val() == '-1')
+     {
+     	alert('Please select video dimensions & format');
+     }
+     else
+     {
+		 $('.convert_video').html('');
+		 $('.convert_video').hide();
+		 
+		 $('#btn_convert').attr('disabled','disabled');
+		 var dimension = $('#vid_dim option:selected').text();
+	  
+		 var dim = dimension.split('x');
+		 var format = $('#vid_format').val();
+		 
+		 var player = $('#video').get(0);
+		 path = player.currentSrc.replace('http://localhost','/var/www');
+		 
+		 fname = player.currentSrc.substr(player.currentSrc.lastIndexOf('/')+1);
+		 outputname = fname.substr(0, fname.lastIndexOf('.'))+'_'+dimension+'.'+format;
+		 download = path.substr(0,path.lastIndexOf('/'))+'/'+outputname;
+		 
+		 $.ajax({
+		 		type:'POST',
+		 		url:'videotoolkit/examples/videoconverter.php',
+		 		dataType : 'json',
+		 		data:{filepath:path, width:dim[0], height:dim[1], format:format, name:outputname},
+		 		beforeSend: function() {
+			      $("#wait1").show();
+			    },
+		 		success:function(data)
+		 		{
+			 		$("#wait1").hide();
+			 		$('#btn_convert').removeAttr('disabled');
+			 		if(data.success === true)								//Success 
+			 		{
+		 		 		$('.convert_video').html('');
+			 		 	$('.convert_video').show();
+					
+			 		 	var src="videotoolkit/examples/output/"+outputname;		
+			 		 	$('.convert_video').append('<h3>Video converted. </h3><a href='+src+' download='+outputname+'>Download</a>'); 
+			 		}
+			 		else													// Fail
+			 		{
+			 		 	$('.convert_video').html('');$('.convert_video').show();
+				 		$('.convert_video').append('<p>Sorry..!video convertion failed please try after some time.</p>');	
+			 		}
+		 		},
+		 		error: function(){
+		 		
+		 		},
+		 	});
+	 	}
+     });
+});
+
+</script>
+
+
+</body> 
+</html>
+

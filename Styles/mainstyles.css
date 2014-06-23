@@ -1,0 +1,25 @@
+#stage{
+	background:#eee;
+	width:400px;height:300px;
+	overflow:hidden;
+	position:relative;
+	margin:2em 0;
+}
+
+#stage span{
+	font-size:20px;
+	color:#666;
+	display:block;
+	padding:2em;
+}
+
+#video{
+	width:400px;height:300px;
+	position:absolute;
+	top:0;left:0;
+}
+
+.value{ 
+	width:50px; 
+	background-color:silver; 
+}

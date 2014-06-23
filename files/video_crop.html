@@ -1,0 +1,127 @@
+<!DOCTYPE html> 
+<html> 
+<head>
+	<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+	<meta charset="utf-8">
+	
+	<link rel="stylesheet" href="Styles/mainstyles.css" type="text/css">
+	<script src="Scripts/jquery.js"></script>
+	
+</head>
+
+<body> 
+
+<div style="float:left;width:45%;height:500px;">
+<h3>Sample video</h3>
+<div style="text-align:center"> 
+  
+   <div id="stage">
+  		<video id="video" controls autoplay>
+    		<source src="Videos/big_buck_bunny_multi.ogg" type="video/ogg">
+    		Your browser does not support HTML5 video.
+  		</video>
+   </div>
+    
+</div>
+
+</div> 
+
+
+<div style="float:left;width:40%;height:500px;">
+<h3>Video crop options:</h3>
+	
+	 <img src="Images/trim_options.png" style="width:300px;height:200px;float:right;">
+	 <br>
+	 Width: <input type="text" id="txt_vid_width" class="numonly" maxlength=4 placeholder="Enter video width">
+	 Height: <input type="text" id="txt_vid_height" class="numonly" maxlength=4 placeholder="Enter video height">
+	 point x:<input type="text" id="txt_strt_point" class="numonly" maxlength=4 placeholder="starting point (x)">
+	 point y:<input type="text" id="txt_end_point" class="numonly" maxlength=4 placeholder="starting point (y)">
+	
+	 <input type="button" value="Crop" id="btn_crop">
+	  <div id="wait" style="display:none;width:150px;height:89px;position:absolute;padding:2px;margin-right:20px;"><img src='Images/demo_wait.gif' width="20" height="20" />Cropping..</div>
+	<div class="crop_video" style="display:none;"></div> 
+	
+
+</div>
+
+</div> 
+
+ 
+<script>
+
+$(document).ready(function(){ 
+    
+      $('.numonly').keypress(function(evt){
+       	var charCode = (evt.which) ? evt.which : event.keyCode
+    	if (charCode > 31 && (charCode < 48 || charCode > 57))
+        	return false;
+    	return true;
+      });
+     
+     $('#btn_crop').click(function(){
+  
+     $('.crop_video').html('');
+	 $('.crop_video').hide();
+		 		 	
+    
+     
+     var width = $('#txt_vid_width').val();
+     var height = $('#txt_vid_height').val();
+     var pt_x = $('#txt_strt_point').val();
+     var pt_y = $('#txt_end_point').val();
+             
+     if(width == '' || height == '' || pt_x == '' || pt_y == '')
+     {
+     	alert('Please fill all fields');
+     }
+     else
+     {
+	    // $('#btn_crop').attr('disabled','disabled');
+		 var player = $('#video').get(0);
+		 path = player.currentSrc.replace('http://localhost','/var/www');
+		 
+		 fname = player.currentSrc.substr(player.currentSrc.lastIndexOf('/')+1);
+		 
+		 outputname = fname;
+		 download = path.substr(0,path.lastIndexOf('/'))+'/'+outputname;
+		 
+	   
+		 	 $.ajax({
+		 		type:'POST',
+				url:'videotoolkit/examples/videocrop.php',
+		 		dataType : 'json',
+		 		data:{filepath:path, name:outputname,width:width,height:height,x:pt_x,y:pt_y},
+		 		beforeSend: function() {
+			      $("#wait").show();
+			    },
+		 		success:function(data)
+		 		{
+			 		$("#wait").hide();
+			 		$('#btn_crop').removeAttr('disabled');
+			 		if(data.success === true)								//Success
+			 		{
+			 			$('.crop_video').html('');
+			 		 	$('.crop_video').show();
+			 		 	
+			 			var src="videotoolkit/examples/output/"+outputname;		
+			 			$('.crop_video').append('<a href='+src+' download='+outputname+'>Download</a>');
+		 			}
+		 			else
+		 			{
+		 				$('.crop_video').html('');
+			 		 	$('.crop_video').show();
+		 				$('.crop_video').append('Sorry..!!cropping failed.');
+		 			}
+		 		}
+		 	}); 	
+		}
+     });
+});
+
+
+</script>
+
+
+</body> 
+</html>
+

@@ -1,0 +1,745 @@
+<!DOCTYPE html> 
+<html> 
+<head>
+	<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+	<meta charset="utf-8">
+	<!--<script src="Scripts/capture.js"></script>
+	
+	<script src="Scripts/main.js"></script>-->
+	
+	<link href="bootstrap/css/bootstrap.css" rel="stylesheet" media="screen" />
+	 <link href="bootstrap/css/bootstrap-responsive.css" rel="stylesheet" media="screen" />
+		<!-- External JScripts -->
+	 <script src="bootstrap/js/jquery.js"></script>
+	 <script src="bootstrap/js/bootstrap.js"></script>
+	 <script src="Scripts/ajaxform.js"></script>
+	
+	<link rel="text/css" href="Styles/mainstyles.css" type="text/css">
+	<style>
+	#stage{background:#eee;width:400px;height:300px;overflow:hidden;
+         position:relative;margin:2em 0;}
+  	#stage span{font-size:20px;color:#666;display:block;padding:2em;}
+  	#video{width:400px;height:300px;position:absolute;top:0;left:0;}
+  	
+  	
+  	
+  	#controls{position:relative;width:400px;}
+ 	
+ 	#cropdiv{background:#eee;width:300px;height:200px;overflow:hidden;
+         position:relative;margin:2em 0;}
+  	
+ 	.value{
+ 		width:50px;
+ 		background-color:silver;
+ 	}
+ 
+	</style>
+</head>
+
+<body> 
+
+<div style="float:left;width:45%;height:450px;margin-left:25px;">
+	<h3>Sample video</h3>
+	<div style="text-align:center"> 
+	   <div id="stage">
+	  		<video id="video" controls autoplay>
+				<source src="Videos/big_buck_bunny.webm" type="video/webm">
+				Your browser does not support HTML5 video.
+	  		</video>
+	   </div>
+	</div>
+</div> 
+
+
+<div style="float:left;width:50%;height:450px;">
+	<h3>Video Manipulation</h3>
+	   
+	   	<!-- start of tab -->
+		<div class="bs-docs-example">
+	  		<ul id="myTab" class="nav nav-tabs">
+		  		  <li class="active"><a href="#trim" data-toggle="tab">Trim</a></li>
+				  <li><a href="#crop" data-toggle="tab">Crop</a></li>
+				  <li><a href="#resizer" data-toggle="tab">Resizer</a></li>
+				  <li><a href="#exaudio" data-toggle="tab">Extract Audio</a></li>
+				  <li><a href="#snap" data-toggle="tab">Snapshot</a></li>
+				  <li><a href="#gif" data-toggle="tab">Gif</a></li>
+				  <li><a href="#split" data-toggle="tab">Split</a></li>
+				  <li><a href="#wmark" data-toggle="tab">Water Mark</a></li>
+			</ul>
+			
+			<!-- start of tab contents -->
+			<div id="myTabContent" class="tab-content">
+            	
+            	<!-- start of crop -->
+            	<div class="tab-pane fade " id="crop">
+                <h4>Video crop options:</h4>
+					 <img src="Images/trim_options.png" style="width:300px;height:200px;float:right;">
+					 <br>
+					 Width: <input type="text" id="txt_vid_width" class="numonly" maxlength=4 placeholder="Enter video width" style="width:150px;"><br>
+					 Height: <input type="text" id="txt_vid_height" class="numonly" maxlength=4 placeholder="Enter video height" style="width:150px;"><br>
+					 point x:<input type="text" id="txt_strt_point" class="numonly" maxlength=4 placeholder="starting point (x)" style="width:150px;"><br>
+					 point y:<input type="text" id="txt_end_point" class="numonly" maxlength=4 placeholder="starting point (y)" style="width:150px;"><br>
+	
+					 <input type="button" value="Crop" id="btn_crop" class="btn btn-primary">
+					 <div id="wait" style="display:none;width:150px;height:89px;position:absolute;padding:2px;margin-right:20px;"><img src='Images/demo_wait.gif' width="20" height="20" />Cropping..</div>
+					<div class="crop_video" style="display:none;"></div> 
+              	</div>
+                <!-- End of crop -->
+              
+              
+              	<!-- start of Trim -->
+               <div class="tab-pane fade in active" id="trim">
+               		<h4>Video Trim options</h4>
+	  
+					Start time :<input type="text" class="txt_start" placeholder="start time" readonly style="width:60px;"><span class="ss">seconds</span><input type="button" class="getstart" value="get time" style="margin-left:5px;">
+							 <br>
+					End time :  <input type="text" class="txt_end"  placeholder="end time" readonly style="width:60px;"><span class="es">seconds</span><input type="button" class="getend" value="get time" style="margin-left:5px;"><br>   
+				  
+					<button id="btn_trim" class="btn btn-primary">Trim</button>
+					<div id="wait2" style="display:none;width:150px;height:89px;position:absolute;padding:2px;margin-right:20px;"><img src='Images/demo_wait.gif' width="20" height="20" />Trimming..</div>
+					<div class="trim_video" style="display:none;"></div>
+              </div>
+              <!-- End of Trim -->
+              
+              
+              <!-- start of Snap -->
+              <div class="tab-pane fade" id="snap">
+              		<h4>Snapshot from video:</h4>
+					 Time:<input type="text" id="txt_time" class="numonly" maxlength="4" placeholder="Snap time" style="width:100px;" readonly><input type="button" class="getsnap" value="get snap time" style="margin-left:5px;"><br>
+					  <input type="button" value="Capture" id="btn_capture" class="btn btn-primary" >
+					  <div id="wait3" style="display:none;width:150px;height:89px;position:absolute;padding:2px;margin-right:20px;"><img src='Images/demo_wait.gif' width="20" height="20" />Capturing..</div>
+					<div class="capture_video" style="display:none;"></div> 
+              </div>
+              <!-- End of Snap -->
+              
+              
+              
+              <!-- start of Extarct Audio -->
+              <div class="tab-pane fade" id="exaudio">
+              		<h4>Extract audio from video:</h4>
+					<input type="button" value="Extraxt Audio" id="btn_ex_audio" class="btn btn-primary">
+					<div id="wait4" style="display:none;width:150px;height:89px;position:absolute;padding:2px;margin-right:20px;"><img src='Images/demo_wait.gif' width="20" height="20" />Extracting..</div>
+					<div class="extract_audio" style="display:none;"></div> 
+              </div>
+              <!-- End of Extarct Audio -->
+              
+              
+              <!-- start of Gif -->
+              <div class="tab-pane fade" id="gif">
+              		<h4>Animated Gif from video:</h4>
+                	Start time :<input type="text" class="txt_gif_start" placeholder="start time" readonly style="width:60px;"><span class="ss">seconds</span><input type="button" class="get_gif_start" value="get time" style="margin-left:5px;">
+						 <br>
+					End time :  <input type="text" class="txt_gif_end" placeholder="end time" readonly style="width:60px;"><span class="es">seconds</span><input type="button" class="get_gif_end" value="get time" style="margin-left:5px;"><br>   
+                
+					<input type="button" value="Animated Gif" id="btn_gif" class="btn btn-primary">
+					<div id="wait5" style="display:none;width:150px;height:89px;position:absolute;padding:2px;margin-right:20px;"><img src='Images/demo_wait.gif' width="20" height="20" />Animating..</div>
+					<div class="video_animate" style="display:none;"></div> 
+              </div>
+              <!-- End of Extarct Gif -->
+              
+              
+              <!-- start of Resizer -->
+              <div class="tab-pane fade" id="resizer">
+              		<h4>Resize video:</h4>
+	 
+					<select id="vid_dim" style="width:200px;">
+		 				<option value="-1">-Select Dimensions-</option>
+		 				<option value="DIMENSION_SQCIF">128x96</option>	 		<option value="DIMENSION_QQVGA">160x120</option>
+					 	<option value="DIMENSION_QCIF">176x144</option>		 	<option value="DIMENSION_VGA">640x480</option>
+					 	<option value="DIMENSION_CIF">352x288</option>	 		<option value="DIMENSION_SVGA">800x600</option>
+					 	<option value="DIMENSION_4CIF">704x576</option>	 		<option value="DIMENSION_HD480">852x480</option>
+					 	<option value="DIMENSION_QVGA">320x240</option>			<option value="DIMENSION_CGA">320x200</option>
+					 	<option value="DIMENSION_WVGA">852x480</option>			<option value="DIMENSION_EGA">640x350</option>	 		
+					 	<option value="DIMENSION_XGA">1024x768</option>			<option value="DIMENSION_HD720">1280x720</option>
+				 	 		 			 	
+						<!--				 	
+						<option value="DIMENSION_QSXGA">2560x2048</option>		<option value="DIMENSION_HSXGA">5120x4096</option>
+				 	 	<option value="DIMENSION_QXGA">2048x1536</option>		<option value="DIMENSION_SXGA">1280x1024</option>
+				 	 	<option value="DIMENSION_WHSXGA">6400x4096</option> 	<option value="DIMENSION_WQSXGA">3200x2048</option>
+				 	 	<option value="DIMENSION_HD1080">1920x1080</option> 	<option value="DIMENSION_UXGA">1600x1200</option>
+				 	 	<option value="DIMENSION_WOXGA">2560x1600</option>	 	<option value="DIMENSION_WQUXGA">3840x2400</option>
+				 	 	<option value="DIMENSION_WHUXGA">7680x4800</option> 	<option value="DIMENSION_WUXGA">1920x1200</option>
+				 	 	<option value="DIMENSION_WXGA">1366x768</option>		<option value="DIMENSION_WSXGA">1600x1024</option>
+				 	 	-->
+	 				</select>
+	 
+					 <select id="vid_format" style="width:200px;">
+					 	<option value="-1">-Select video Format-</option>
+					 	<option value="3gp">3gp</option> <option value="flv">FLV</option>
+					 	<!--<option value="h264">H264</option>--> <option value="mkv">MKV</option>
+					 	<option value="mp4">MP4</option> <option value="ogg">OGG</option>
+					 	<option value="webm">WEBM</option> <option value="wmv">WMV</option> 
+					 	<!--<option value="wmv3">WMV3</option>-->
+					 </select>
+	 
+	 				<br>
+	 
+	 				<input type="button" value="Convert" id="btn_convert" class="btn btn-primary">
+					 <div id="wait1" style="display:none;width:150px;height:89px;position:absolute;padding:2px;margin-right:20px;"><img src='Images/demo_wait.gif' width="20" height="20" />Converting..</div>
+					<div class="convert_video" style="display:none;"></div> 
+              	</div>
+              	<!-- End of Resizer -->
+              	
+              	
+              	 <!-- start of Split video -->
+              <div class="tab-pane fade" id="split">
+              		<h4>Split video:</h4>
+              		Enter time of each video: <input type="text" id="txt_split" placeholder="Time in seconds" maxlength="2" style="width:150px;" class="numonly">
+              		<br>
+					<input type="button" value="Split Video" id="btn_split" class="btn btn-primary">
+					<div id="wait6" style="display:none;width:150px;height:89px;position:absolute;padding:2px;margin-right:20px;"><img src='Images/demo_wait.gif' width="20" height="20" />Splitting..</div>
+					<div class="split_video" style="display:none;"></div> 
+              </div>
+              <!-- End of Splitvideo -->
+              	
+              
+              <!-- Start of watermarking-->
+				
+          	  <div class="tab-pane fade" id="wmark">
+          	  		<form id="wmarkform"  method="post" enctype="multipart/form-data">
+		          		<h4>Watermarking on video:</h4>
+		          		Browse image: <input name="img" type="file" id="file_sel">
+		          		<br>
+				  		<input type="submit" name="submit" value="Watermark" id="btn_wmark" class="btn btn-primary">
+			  			<div id="wait7" style="display:none;width:150px;height:89px;position:absolute;padding:2px;margin-right:20px;"><img src='Images/demo_wait.gif' width="20" height="20" />Water marking..</div>
+			  			<div class="wmark_video" style="display:none;"></div> 
+			  		</form>
+              </div>
+              
+              
+              <!-- End of water marking -->	
+              
+                            	
+       		</div> <!-- end of tab contents -->
+		</div><!-- end of tab --> 
+</div>
+
+<div style="clear:both;"></div>  
+
+<div id="result" style="margin:0 auto;display:none;">
+	<h4>Output video</h4>
+</div>
+ 
+
+<script>
+
+$(document).ready(function(){
+
+   	  var player = $('#video').get(0);
+   
+      $('.numonly').keypress(function(evt){
+       	var charCode = (evt.which) ? evt.which : event.keyCode
+    	if (charCode > 31 && (charCode < 48 || charCode > 57))
+        	return false;
+    	return true;
+      });
+    
+    
+		// Get start time for trim
+		$('.getstart').click(function(){
+		 if(player){
+		        current_time=player.currentTime;
+		        $('.txt_start').val(Math.floor(current_time));
+		    }
+		 });
+    
+     
+		 //Get start time for gif
+		 $('.get_gif_start').click(function(){
+		 if(player){
+		        current_time=player.currentTime;
+		        $('.txt_gif_start').val(Math.floor(current_time));
+		    }
+		 });
+		
+		 
+     //Get End time for trim
+     $('.getend').click(function(){
+            if(player){
+                current_time=player.currentTime;
+                $('.txt_end').val(Math.floor(current_time));
+            }
+     });
+     
+     
+     //Get end time for gif
+      $('.get_gif_end').click(function(){
+            if(player){
+                current_time=player.currentTime;
+                $('.txt_gif_end').val(Math.floor(current_time));
+            }
+     });
+     
+     
+     //Snapshot time
+     $('.getsnap').click(function(){
+            if(player){
+                current_time=player.currentTime;
+                $('#txt_time').val(Math.floor(current_time));
+            }
+     });
+ 
+   
+    
+      //Video Crop
+     ////////////////////////////////////////////////////////////////////////////
+      
+     $('#btn_crop').click(function(){
+  
+     	 $('.crop_video').html('');
+	 	 $('.crop_video').hide();
+		 		 	
+		 var width = $('#txt_vid_width').val();
+		 var height = $('#txt_vid_height').val();
+		 var pt_x = $('#txt_strt_point').val();
+		 var pt_y = $('#txt_end_point').val();
+             
+		 if(width == '' || height == '' || pt_x == '' || pt_y == '')
+		 {
+		 	alert('Please fill all fields');
+		 }
+		 else if(height > 300)
+		 {
+		 	alert('Please enter height less than 300px');
+		 }
+		 else
+		 {
+	  	 	details = player_details();
+		 	outputname = details['fname'];
+		 	path = details['path'];
+		 	
+		 	$('#btn_crop').attr('disabled','disabled');
+	   
+		 	 $.ajax({
+		 		type:'POST',
+				url:'videotoolkit/examples/videocrop.php',
+		 		dataType : 'json',
+		 		data:{filepath:path, name:outputname,width:width,height:height,x:pt_x,y:pt_y},
+		 		beforeSend: function() {
+			      $("#wait").show();
+			    },
+		 		success:function(data)
+		 		{
+			 		$("#wait").hide();
+			 		$('#btn_crop').removeAttr('disabled');
+			 		if(data.success === true)								//Success
+			 		{
+			 			$('.crop_video').html('');
+			 		 	$('.crop_video').show();
+			 		 	
+			 			var src="videotoolkit/examples/output/"+outputname;		
+			 			$('.crop_video').append('<a href='+src+' download='+outputname+'>Download</a>');
+			 			
+		 			}
+		 			else
+		 			{
+		 				$('.crop_video').html('');
+			 		 	$('.crop_video').show();
+		 				$('.crop_video').append('Sorry..!!cropping failed.');
+		 			}
+		 		}
+		 	}); 	
+		}
+     });
+     
+     
+     /////////////////////////////////////////////////////
+     //Video Trim
+     
+     $('#btn_trim').click(function(){
+    
+     	var start = $('.txt_start').val();
+     	var end = $('.txt_end').val();
+ 		if(start == '' || end == '')
+ 		{
+ 			alert('please enter the start and end values');
+ 		}
+ 		else if(start < end)
+ 		{
+ 		
+ 			details = player_details();
+		 	outputname = details['fname'];
+		 	path = details['path'];
+
+ 			
+     		$('#btn_trim').attr('disabled','disabled');
+		 	$.ajax({
+		 		type:'POST',
+		 		url:'videotoolkit/examples/videotrim.php',
+		 		dataType : 'json',
+		 		data:{start:start, end : end, name: outputname, filepath:path},
+		 		beforeSend: function() {
+		          $("#wait2").show();
+		        },
+		 		success:function(data){
+		 		 $("#wait2").hide();
+		 		 $('#btn_trim').removeAttr('disabled');
+		 		
+		 		 if(data.success === true)								//Success
+		 		 {
+		 		 	$('.trim_video').html('');
+		 		 	$('.trim_video').show();
+		 		 	var src="videotoolkit/examples/output/"+outputname;		// Show cropped video
+		 		 	$('.trim_video').append('<a href='+src+' download='+outputname+'>Download</a>');
+		 		 	
+		 		 }
+		 		 else													// Fail
+		 		 {
+		 		 	$('.trim_video').html('');$('.trim_video').show();
+		 		 	$('.trim_video').append('<p>Sorry..!Trim video failed please try after some time.</p>');	
+		 		 }
+		 		},
+		 		error: function(){
+		 		
+		 		},
+		 	});
+     	}
+     	else
+     	{
+     		alert('Start time is less than end time');
+     	}
+     });
+   
+     
+     ///////////////////////////////////////////////////////////////////
+	 //Snap shot
+	
+	
+	 $('#btn_capture').click(function(){
+     
+     var time = $('#txt_time').val();
+     if(time != '')
+     {
+		 $('.capture_video').html('');
+		 $('.capture_video').hide();
+			 		 	
+		 $('#btn_capture').attr('disabled','disabled');
+		 
+		 
+		 details = player_details();
+		 path = details['path'];
+		 name = details['fname'].substr(0,details['fname'].lastIndexOf('.'));
+		 outputname = name+'.jpg';
+	 
+   
+     	 $.ajax({
+	 		type:'POST',
+			url:'videotoolkit/examples/videosnapshot.php',
+	 		dataType : 'json',
+	 		data:{filepath:path, name:outputname, time:time},
+	 		beforeSend: function() {
+	          $("#wait3").show();
+	        },
+	 		success:function(data)
+	 		{
+		 		$("#wait3").hide();
+		 		$('#btn_capture').removeAttr('disabled');
+		 		if(data.success === true)								//Success      onlinevideo
+		 		{
+		 			$('.capture_video').html('');
+		 		 	$('.capture_video').show();
+		 		 	
+		 			var src="videotoolkit/examples/output/"+outputname;		
+		 			$('.capture_video').append('<a href='+src+' download='+outputname+'>Download</a>');
+	 			}
+	 		}
+	 	});     
+	 	
+	 }
+	 else
+	 {
+	 	alert('Please enter time to capture video');
+	 }
+	});
+	
+	/////////////////////////////////////////////////////////////////////////     
+	//Resizer
+	
+	 $('#btn_convert').click(function(){
+    
+     if($('#vid_format').val() == '-1' || $('#vid_dim').val() == '-1')
+     {
+     	alert('Please select video dimensions & format');
+     }
+     else
+     {
+		 $('.convert_video').html('');
+		 $('.convert_video').hide();
+		 
+		 $('#btn_convert').attr('disabled','disabled');
+		 var dimension = $('#vid_dim option:selected').text();
+	  
+		 var dim = dimension.split('x');
+		 var format = $('#vid_format').val();
+		 
+		 
+		 details = player_details();
+		 outputname = details['fname'];
+		 path = details['path'];
+		
+		 outputname = details['fname'].substr(0, details['fname'].lastIndexOf('.'))+'_'+dimension+'.'+format;
+		 
+		 
+		 $.ajax({
+	 		type:'POST',
+	 		url:'videotoolkit/examples/videoconverter.php',
+	 		dataType : 'json',
+	 		data:{filepath:path, width:dim[0], height:dim[1], format:format, name:outputname},
+	 		beforeSend: function() {
+		      $("#wait1").show();
+		    },
+	 		success:function(data)
+	 		{
+		 		$("#wait1").hide();
+		 		$('#btn_convert').removeAttr('disabled');
+		 		if(data.success === true)								//Success 
+		 		{
+	 		 		$('.convert_video').html('');
+		 		 	$('.convert_video').show();
+				
+		 		 	var src="videotoolkit/examples/output/"+outputname;		
+		 		 	$('.convert_video').append('<a href='+src+' download='+outputname+'>Download</a>'); 
+		 		}
+		 		else													// Fail
+		 		{
+		 		 	$('.convert_video').html('');$('.convert_video').show();
+			 		$('.convert_video').append('<p>Sorry..!video convertion failed please try after some time.</p>');	
+		 		}
+	 		},
+	 		error: function(){
+	 		
+	 		},
+	 	});
+	 }
+  });
+
+	
+	///////////////////////////////////////////////////////////////////////////
+	
+	//Extract Audio
+	
+	$('#btn_ex_audio').click(function(){
+     
+     $('.extract_audio').html('');
+	 $('.extract_audio').hide();
+		 		 	
+     $('#btn_ex_audio').attr('disabled','disabled');
+     
+       details = player_details();
+	   path = details['path'];
+	   name = details['fname'].substr(0,details['fname'].lastIndexOf('.'));
+	   outputname = name+'.mp3';
+	
+    	 $.ajax({
+	 		type:'POST',
+			url:'videotoolkit/examples/audioextracter.php',
+	 		dataType : 'json',
+	 		data:{filepath:path, name:outputname},
+	 		beforeSend: function() {
+	          $("#wait4").show();
+	        },
+	 		success:function(data)
+	 		{
+		 		$("#wait4").hide();
+		 		$('#btn_ex_audio').removeAttr('disabled');
+		 		if(data.success === true)								//Success      onlinevideo
+		 		{
+		 			$('.extract_audio').html('');
+		 		 	$('.extract_audio').show();
+		 		 	
+		 			var src="videotoolkit/examples/output/"+outputname;		
+		 			$('.extract_audio').append('<a href='+src+' download='+outputname+'>Download</a>');
+	 			}
+	 			else													// Fail
+		 		{
+		 		 	$('.extract_audio').html('');$('.extract_audio').show();
+			 		$('.extract_audio').append('<p>Sorry..!auduo extraction failed please try after some time.</p>');	
+		 		}
+	 		}
+	 	});     
+	});
+
+	
+	/////////////////////////////////////////////////////////////////////////////////
+	//Gif Image
+	
+	 $('#btn_gif').click(function(){
+     
+     	var start = $('.txt_gif_start').val();
+     	var end = $('.txt_gif_end').val();
+ 
+ 		if(start == '' || end == '')
+ 		{
+ 			alert('please enter the start and end values');
+ 		}
+ 
+ 		else if(start < end)
+ 		{
+ 		
+			 $('.video_animate').html('');
+			 $('.video_animate').hide();
+				 		 	
+			 $('#btn_gif').attr('disabled','disabled');
+			 
+			 
+			 details = player_details();
+			 path = details['path'];
+			 name = details['fname'].substr(0,details['fname'].lastIndexOf('.'));
+			 outputname = name+'.gif';
+		
+		 	 $.ajax({
+		 		type:'POST',
+				url:'videotoolkit/examples/gif.php',
+		 		dataType : 'json',
+		 		data:{filepath:path, name:outputname, start:start, end:end},
+		 		beforeSend: function() {
+				  $("#wait5").show();
+				},
+		 		success:function(data)
+		 		{
+			 		$("#wait5").hide();
+			 		$('#btn_gif').removeAttr('disabled');
+			 		if(data.success === true)								//Success      onlinevideo
+			 		{
+			 			$('.video_animate').html('');
+			 		 	$('.video_animate').show();
+			 		 	
+			 			var src="videotoolkit/examples/output/"+outputname;		
+			 			$('.video_animate').append('<a href='+src+' download='+outputname+'>Download</a>');
+		 			}
+		 			else													// Fail
+			 		{
+			 		 	$('.video_animate').html('');$('.video_animate').show();
+				 		$('.video_animate').append('<p>Sorry..!Gif image creation failed please try after some time.</p>');	
+			 		}
+		 		}
+			});     	
+	 	}
+		else
+		{
+		 	alert('Please enter start time is less than end time.');
+		}
+	});
+	
+	////////////////////////////////////////////////////////////////////////////////
+    //Split video 
+     
+     $('#btn_split').click(function(){
+     
+     var time = $('#txt_split').val();
+     if(time != '')
+     {
+	 	 $('.split_video').html('');
+	 	 $('.split_video').hide();
+	 		 		 	
+	 	 $('#btn_split').attr('disabled','disabled');
+	 	 
+	 	 details = player_details();
+	 	 path = details['path'];
+	 	 name = details['fname'].substr(0,details['fname'].lastIndexOf('.'));
+	 
+     	 $.ajax({
+	 		type:'POST',
+	 		url:'videotoolkit/examples/videosplit.php',
+	 		dataType : 'json',
+	 		data:{filepath:path,name:name, splits:time},
+	 		beforeSend: function() {
+	            $("#wait6").show();
+	        },
+	 		success:function(data)
+	 		{
+	 	 		$("#wait6").hide();
+	 	 		$('#btn_split').removeAttr('disabled');
+	 	 		if(data.success === true)								//Success      onlinevideo
+	 	 		{
+	 	 			$('.split_video').html('');
+	 	 		 	$('.split_video').show();
+	 	 		 	
+	 	 			var src="videotoolkit/examples/output/"+data.msg;		
+	 	 			$('.split_video').append('<a href='+src+' download="output.zip">Download</a>');
+	 			}
+	 		}
+	 	});     
+	 }
+	 else
+	 {
+	 	alert('Please enter time to split video');
+	 }
+	}); 
+     
+    ////////////////////////////////////////////////////////////////////////////  
+    //Water marking
+	
+     $('#wmarkform').submit(function(e){
+     
+        e.preventDefault();
+        data = new FormData($('#wmarkform')[0]);
+  
+        $.ajax({
+            type: 'POST',
+            url: 'videotoolkit/examples/upload.php',
+            data: data,
+            cache: false,
+            contentType: false,
+            processData: false
+        }).done(function(data) {
+            if(data == 1)
+            {
+            	 $('.wmark_video').html('');
+			 	 $('.wmark_video').hide();
+			 		 		 	
+			 	 $('#btn_wmark').attr('disabled','disabled');
+			 	 details = player_details();
+			 	 path = details['path'];
+			 	 name = details['fname'].substr(0,details['fname'].lastIndexOf('.'))+'.mp4';
+            	$.ajax({ 
+			 		type:'POST',
+			 		url:'videotoolkit/examples/videowatermark.php',
+			 		dataType : 'json',
+			 		data:{name:name},
+			 		beforeSend: function() {
+					    $("#wait7").show();
+					},
+			 		success:function(data)
+			 		{
+			 	 		$("#wait7").hide();
+			 	 		$('#btn_wmark').removeAttr('disabled');
+			 	 		if(data.success === true)								
+			 	 		{
+			 	 			$('.wmark_video').html('');
+			 	 		 	$('.wmark_video').show();
+			 	 		 	
+			 	 			var src="videotoolkit/examples/output/"+name;		
+			 	 			$('.wmark_video').append('<a href='+src+' download="'+name+'">Download</a>');
+			 			}
+			 		}
+			 	});
+            }
+        }).fail(function(jqXHR,status, errorThrown) {
+            console.log(errorThrown);
+            console.log(jqXHR.responseText);
+            console.log(jqXHR.status);
+        });
+    	
+ 
+
+	}); 
+   
+     
+});
+
+function player_details()
+{
+	player = $('#video').get(0);
+	details = new Array();
+	details['path'] = player.currentSrc.replace('http://localhost','/var/www');
+	details['fname'] = player.currentSrc.substr(player.currentSrc.lastIndexOf('/')+1);
+	details['download'] = details['path'].substr(0,details['path'].lastIndexOf('/'));
+	return details;	 
+}
+
+</script>
+
+</body> 
+</html>
+

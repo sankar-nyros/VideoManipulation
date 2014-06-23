@@ -1,0 +1,144 @@
+<!DOCTYPE html> 
+<html> 
+<head>
+	<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+	<meta charset="utf-8">
+	
+	<link rel="stylesheet" href="Styles/mainstyles.css" type="text/css">
+	<script src="Scripts/jquery.js"></script>
+</head>
+
+<body> 
+
+<div style="float:left;width:45%;height:500px;">
+<h3>Sample video</h3>
+<div style="text-align:center"> 
+  
+   <div id="stage">
+  		<video id="video" controls autoplay>
+    		<source src="Videos/big_buck_bunny_multi.ogg" type="video/ogg">
+    		Your browser does not support HTML5 video.
+  		</video>
+   </div>
+    
+</div>
+
+   <input type="file" id="photoimg" name="photoimg" style="" accept="image/*" onchange='getFilePathFromDialog()' onchange='Test.UpdatePreview(this)' />
+
+</div> 
+
+
+<div style="float:left;width:40%;height:500px;">
+	<h3>Video split options</h3>
+	  
+	<input type="text" id="splits">  
+	<button id="btn_split">Split</button>
+	<div id="wait" style="display:none;width:150px;height:89px;position:absolute;padding:2px;margin-right:20px;"><img src='Images/demo_wait.gif' width="20" height="20" />Splitting..</div>
+
+
+	<div class="split_video" style="display:none;">
+	</div>
+
+
+</div>
+</div> 
+
+ 
+<script>
+
+$(document).ready(function(){ 
+     
+     
+     //Crop video
+     $('#btn_split').click(function(){
+    	
+     	//$('#crop').attr('disabled','disabled');
+     var splits = $('#splits').val();
+ 
+ 	 $('.split_video').html('');
+	 $('.split_video').hide();
+		 		 	
+     $('#btn_split').attr('disabled','disabled');
+     
+     
+     var player = $('#video').get(0);
+     path = player.currentSrc.replace('http://localhost','/var/www');
+     
+     fname = player.currentSrc.substr(player.currentSrc.lastIndexOf('/')+1);
+     name = fname.substr(0,fname.lastIndexOf('.'));
+     outputname='test';
+	 download = path.substr(0,path.lastIndexOf('/'))+'/'+outputname;
+	 
+ 		if(splits != '')
+ 		{
+     		$('#btn_split').attr('disabled','disabled');
+		 	$.ajax({
+		 		type:'POST',
+		 		url:'videotoolkit/examples/videosplit.php',
+		 		dataType : 'json',
+		 		data:{splits:splits, name: fname, filepath:path},
+		 		beforeSend: function() {
+		          $("#wait").show();
+		        },
+		 		success:function(data){
+		 		 $("#wait").hide();
+		 		 $('#btn_split').removeAttr('disabled');
+		 		 console.log(data);
+		 		 if(data.success === true)								//Success
+		 		 {
+		 		 	$('.split_video').html('');
+		 		 	$('.split_video').show();
+		 		 	var src="videotoolkit/examples/output/"+outputname;		// Show cropped video
+		 		 	$('.split_video').append('<a href='+src+' download='+outputname+'>Download</a>');
+		 		 	 $('#txt_path').val(src);
+		 		 }
+		 		 else													// Fail
+		 		 {
+		 		 	$('.split_video').html('');$('.split_video').show();
+		 		 	$('.split_video').append('<p>Sorry..!Cropping failed please try after some time.</p>');	
+		 		 }
+		 		},
+		 		error: function(){
+		 		
+		 		},
+		 	});
+     	}
+     	else
+     	{
+     		alert('Start time is less than end time');
+     	}
+     });
+     
+});
+
+
+function getFilePathFromDialog() {
+    document.getElementById('photoimg').click();
+Test = {
+        UpdatePreview: function(obj){
+          // if IE < 10 doesn't support FileReader
+          if(!window.FileReader){
+             // don't know how to proceed to assign src to image tag
+          } else {
+             var reader = new FileReader();
+             var target = null;
+            
+             reader.onload = function(e) {
+              target =  e.target || e.srcElement;
+		alert(target.result);
+               $("#img").prop("src", target.result);
+             };
+              reader.readAsDataURL(obj.files[0]);
+          }
+        }
+    }; 
+
+   // document.getElementById('filePath').value = document.getElementById('photoimg').value;
+}
+
+</script>
+<img id="img" >
+
+</body> 
+</html>
+
